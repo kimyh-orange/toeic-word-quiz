@@ -62,6 +62,7 @@ h1{font-size:22px;margin:0 0 4px}
 .nav{display:flex;gap:8px}.nav .btn{flex:1}
 .exit{border:0;background:none;color:var(--sub);font-size:14px;cursor:pointer;padding:0}
 .exit:hover{color:var(--no)}
+.wrong li.dh{display:block;margin-top:10px;padding:6px 0;font-weight:700;color:var(--pri-d);border-bottom:2px solid var(--pri)}
 .hide{display:none}
 @media(max-width:480px){
 main{padding:16px 12px 40px}
@@ -248,16 +249,23 @@ $('again').onclick = () => begin(base);
 $('exit').onclick = () => { if (confirm('퀴즈를 나갈까요? 이번 퀴즈의 기록은 저장되지 않습니다.')) { refreshHome(); show('home'); } };
 $('back').onclick = () => { refreshHome(); show('home'); };
 function showNotes() {
-  const n = loadNotes();
+  const n = loadNotes().filter(([d, w]) => DAYS[d - 1].some(x => x[0] === w))
+    .sort((p, q) => p[0] - q[0] || DAYS[p[0] - 1].findIndex(x => x[0] === p[1]) - DAYS[q[0] - 1].findIndex(x => x[0] === q[1]));
   $('ntitle').textContent = '오답노트 (' + n.length + '개)';
   $('nlist').innerHTML = '';
-  n.forEach(([d, w], i) => {
-    const it = DAYS[d - 1].find(x => x[0] === w); if (!it) return;
-    const li = document.createElement('li'), t = document.createElement('span'), b = document.createElement('b'), x = document.createElement('button');
-    t.className = 'tag st'; t.textContent = 'Day ' + d; b.textContent = w;
+  let last = 0;
+  n.forEach(([d, w]) => {
+    if (d !== last) {
+      last = d;
+      const h = document.createElement('li'); h.className = 'dh';
+      h.textContent = 'Day ' + d + ' (' + n.filter(x => x[0] === d).length + '개)'; $('nlist').appendChild(h);
+    }
+    const it = DAYS[d - 1].find(x => x[0] === w);
+    const li = document.createElement('li'), b = document.createElement('b'), x = document.createElement('button');
+    b.textContent = w;
     x.className = 'x'; x.textContent = '✕'; x.title = '삭제';
-    x.onclick = () => { const a = loadNotes(); a.splice(i, 1); saveNotes(a); showNotes(); };
-    li.append(t, b, it[1], x); $('nlist').appendChild(li);
+    x.onclick = () => { saveNotes(loadNotes().filter(y => !(y[0] === d && y[1] === w))); showNotes(); };
+    li.append(b, it[1], x); $('nlist').appendChild(li);
   });
   $('nquiz').classList.toggle('hide', n.length < 1);
   show('notes');
