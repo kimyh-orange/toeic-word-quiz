@@ -279,7 +279,11 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Enter' && !$('next').classList.contains('hide')) $('next').click();
   else if (e.key === 'ArrowLeft' && idx > 0) $('prev').click();
 });
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+if ('serviceWorker' in navigator) {
+  const had = !!navigator.serviceWorker.controller;   // 새 버전이 적용되면 한 번 새로고침
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (had) location.reload(); });
+  navigator.serviceWorker.register('sw.js');
+}
 </script>
 </body>
 </html>
