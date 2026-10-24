@@ -60,6 +60,8 @@ h1{font-size:22px;margin:0 0 4px}
 #ans.ok{border-color:var(--ok);background:var(--okbg)}#ans.no{border-color:var(--no);background:var(--nobg)}
 .hint{text-align:center;color:var(--sub);font-size:13px;margin:6px 0 10px;min-height:18px}
 .nav{display:flex;gap:8px}.nav .btn{flex:1}
+.exit{border:0;background:none;color:var(--sub);font-size:14px;cursor:pointer;padding:0}
+.exit:hover{color:var(--no)}
 .hide{display:none}
 @media(max-width:480px){
 main{padding:16px 12px 40px}
@@ -100,7 +102,7 @@ h1{font-size:20px}
 </section>
 
 <section id="quiz" class="card hide">
-  <div class="top"><span id="tag"></span><span id="cnt"></span></div>
+  <div class="top"><button class="exit" id="exit">✕ 나가기</button><span><span id="tag"></span> · <span id="cnt"></span></span></div>
   <div class="bar"><i id="bar"></i></div>
   <div class="qwrap"><span class="posb" id="pos"></span><div class="q" id="q"></div></div>
   <div class="opts" id="opts"></div>
@@ -243,6 +245,7 @@ function finish() {
 $('start').onclick = () => { pool = DAYS[day - 1]; title = 'Day ' + day; base = pool; begin(base); };
 $('retry').onclick = () => begin(review);
 $('again').onclick = () => begin(base);
+$('exit').onclick = () => { if (confirm('퀴즈를 나갈까요? 이번 퀴즈의 기록은 저장되지 않습니다.')) { refreshHome(); show('home'); } };
 $('back').onclick = () => { refreshHome(); show('home'); };
 function showNotes() {
   const n = loadNotes();
